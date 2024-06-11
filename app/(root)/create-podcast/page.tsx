@@ -1,8 +1,9 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-import {useForm} from "react-hook-form"
+
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -25,16 +26,14 @@ import {
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
-// import GeneratePodcast from "@/components/GeneratePodcast"
-// import GenerateThumbnail from "@/components/GenerateThumbnail"
+import GeneratePodcast from "@/components/GeneratePodcast"
+import GenerateThumbnail from "@/components/GenerateThumbnail"
 import { Loader } from "lucide-react"
 import { Id } from "@/convex/_generated/dataModel"
 import { useToast } from "@/components/ui/use-toast"
 import { useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { useRouter } from "next/navigation"
-import GeneratePodcast from "@/components/GeneratePodcast"
-import GenerateThumbnail from "@/components/GenerateThumbnail"
 
 const voiceCategories = ['alloy', 'shimmer', 'nova', 'echo', 'fable', 'onyx'];
 
@@ -58,7 +57,7 @@ const CreatePodcast = () => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // const createPodcast = useMutation(api.podcasts.createPodcast)
+  const createPodcast = useMutation(api.podcasts.generateUploadUrl)
 
   const { toast } = useToast()
   // 1. Define your form.
@@ -71,40 +70,42 @@ const CreatePodcast = () => {
   })
  
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    try {
-      setIsSubmitting(true);
-      if(!audioUrl || !imageUrl || !voiceType) {
-        toast({
-          title: 'Please generate audio and image',
-        })
-        setIsSubmitting(false);
-        throw new Error('Please generate audio and image')
-      }
+    // try {
+    //   setIsSubmitting(true);
+    //   // if(!audioUrl || !imageUrl || !voiceType) {
+    //   //   toast({
+    //   //     title: 'Please generate audio and image',
+    //   //   })
+    //   //   setIsSubmitting(false);
+    //   //   throw new Error('Please generate audio and image')
+    //   // }
 
-      // const podcast = await createPodcast({
-      //   podcastTitle: data.podcastTitle,
-      //   podcastDescription: data.podcastDescription,
-      //   audioUrl,
-      //   imageUrl,
-      //   voiceType,
-      //   imagePrompt,
-      //   voicePrompt,
-      //   views: 0,
-      //   audioDuration,
-      //   audioStorageId: audioStorageId!,
-      //   imageStorageId: imageStorageId!,
-      // })
-      toast({ title: 'Podcast created' })
-      setIsSubmitting(false);
-      router.push('/')
-    } catch (error) { 
-      console.log(error);
-      toast({
-        title: 'Error',
-        variant: 'destructive',
-      })
-      setIsSubmitting(false);
-    }
+    //   const podcast = await createPodcast({
+    //     podcastTitle: data.podcastTitle,
+    //     podcastDescription: data.podcastDescription,
+    //     audioUrl,
+    //     imageUrl,
+    //     voiceType,
+    //     imagePrompt,
+    //     voicePrompt,
+    //     views: 0,
+    //     audioDuration,
+    //     audioStorageId: audioStorageId!,
+    //     imageStorageId: imageStorageId!,
+    //   })
+    //   toast({ title: 'Podcast created' })
+    //   setIsSubmitting(false);
+    //   router.push('/')
+    // } catch (error) {
+    //   console.log(error);
+    //   toast({
+    //     title: 'Error',
+    //     variant: 'destructive',
+    //   })
+    //   setIsSubmitting(false);
+    // }
+    console.log(data);
+    
   }
 
   return (
@@ -121,7 +122,7 @@ const CreatePodcast = () => {
                 <FormItem className="flex flex-col gap-2.5">
                   <FormLabel className="text-16 font-bold text-white-1">Title</FormLabel>
                   <FormControl>
-                    <Input className="input-class focus-visible:ring-offset-orange-1" placeholder="Umar Tried Coding" {...field} />
+                    <Input className="input-class focus-visible:ring-offset-orange-1" placeholder="JSM Pro Podcast" {...field} />
                   </FormControl>
                   <FormMessage className="text-white-1" />
                 </FormItem>
@@ -169,7 +170,7 @@ const CreatePodcast = () => {
             />
           </div>
           <div className="flex flex-col pt-10">
-              <GeneratePodcast
+              <GeneratePodcast 
                 setAudioStorageId={setAudioStorageId}
                 setAudio={setAudioUrl}
                 voiceType={voiceType!}
@@ -178,8 +179,8 @@ const CreatePodcast = () => {
                 setVoicePrompt={setVoicePrompt}
                 setAudioDuration={setAudioDuration}
               />
-{/* 
-              <GenerateThumbnail
+
+              {/* <GenerateThumbnail 
                setImage={setImageUrl}
                setImageStorageId={setImageStorageId}
                image={imageUrl}
